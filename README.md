@@ -1,248 +1,257 @@
-## Overview
+# PDF Insight AI - Fullstack PDF Q\&A Application
 
-PDF Insight AI is a full-stack application that allows users to upload PDF documents and ask questions about their content. The application uses natural language processing to analyze PDFs and provide accurate answers to user queries. It features a modern UI with smooth animations, drag-and-drop functionality, and a conversational interface.
+## 📄 Overview
 
-![Application Screenshot](screenshot.png)
+PDF Insight AI is a full-stack AI-powered application that enables users to upload PDF documents and ask natural language questions about their content. The backend processes the documents using modern NLP tools, while the frontend offers a clean and responsive chat-style UI.
 
-## Key Features
+---
 
-- **PDF Upload**: Drag-and-drop or click-to-upload PDF documents
-- **Natural Language Queries**: Ask questions about uploaded documents
-- **Conversational Interface**: Chat-style interaction with AI assistant
-- **Document Management**: Switch between multiple uploaded documents
-- **Responsive Design**: Works on desktop and mobile devices
-- **Dynamic Backgrounds**: Smooth gradient transitions for visual appeal
-- **Real-time Feedback**: Processing indicators and error messages
+## 💡 Key Features
 
-## Technology Stack
+* ✉️ Upload PDFs and extract text content
+* 🤖 Ask natural language questions about any uploaded document
+* 📝 Get accurate, AI-generated answers using the Mistral model via Ollama
+* 🔹 Clean chat-style interface for interaction
+* 🌐 Runs entirely locally, with data privacy by design
+
+---
+
+## 🚀 Tech Stack
 
 ### Backend
-- **Framework**: FastAPI
-- **NLP Processing**: LangChain, Ollama (Mistral model)
-- **Vector Database**: ChromaDB
-- **Text Embeddings**: HuggingFace (all-MiniLM-L6-v2)
-- **PDF Processing**: PyMuPDF
-- **Database**: SQLite
-- **Other**: Python 3.10+
+
+* **Framework**: FastAPI
+* **NLP**: LangChain + Ollama (Mistral)
+* **Embeddings**: HuggingFace MiniLM
+* **Vector Store**: ChromaDB
+* **Database**: SQLite (documents metadata)
+* **PDF Parsing**: PyMuPDF
 
 ### Frontend
-- **Framework**: React.js
-- **UI Library**: React Icons
-- **HTTP Client**: Axios
-- **Styling**: CSS3 with modern features (flexbox, grid, animations)
 
-## Setup Instructions
+* **Framework**: React.js
+* **Styling**: App.css (CSS3, animations, flex/grid)
+* **Utilities**: Axios (HTTP client), React Icons
+
+### External Tools
+
+* **Ollama**: For serving the Mistral language model locally
+
+---
+
+## 📆 Project Structure
+
+```
+pdf-insight-ai/
+├── backend/
+│   ├── main.py           # Backend FastAPI app
+│   ├── requirements.txt  # Python dependencies
+│   ├── uploads/          # Stores uploaded PDFs
+│   ├── storage/          # Stores vector embeddings
+│   └── documents.db      # SQLite database
+└── frontend/
+    ├── src/
+    │   ├── App.js        # Main React app logic
+    │   └── App.css       # Styling file
+    └── ...               # React setup files
+```
+
+---
+
+## ⚡ Setup Instructions
 
 ### Prerequisites
-- Python 3.10+
-- Node.js 16+
-- Ollama installed and running (with Mistral model: `ollama pull mistral`)
-- SQLite (usually included with Python)
 
-### Backend Setup
+* Python 3.10+
+* Node.js 16+
+* Ollama installed ([Download](https://ollama.com/download))
+* Mistral model pulled via `ollama pull mistral`
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/rohan77234/PDF_Q-A_FAST_API_NODEJS_APP
-   cd pdf-insight-ai/backend
-   ```
+### 1. Clone the Repository & Setup Structure
 
-2. Create and activate virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Linux/Mac
-   venv\Scripts\activate    # Windows
-   ```
+```bash
+mkdir pdf-insight-ai && cd pdf-insight-ai
+mkdir backend frontend
+```
 
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+### 2. Backend Setup
 
-4. Create necessary directories:
-   ```bash
-   mkdir uploads storage
-   ```
+```bash
+cd backend
+# Copy `main.py` and `requirements.txt` here
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+mkdir uploads storage
+uvicorn main:app --reload
+```
 
-5. Start the backend server:
-   ```bash
-   uvicorn main:app --reload
-   ```
+### 3. Frontend Setup
 
-### Frontend Setup
+```bash
+cd ../frontend
+npx create-react-app .
+npm install axios react-icons
+# Overwrite src/App.js and src/App.css with provided files
+npm start
+```
 
-1. Navigate to frontend directory:
-   ```bash
-   cd ../frontend
-   ```
+### 4. Run Ollama Server (in another terminal)
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+```bash
+ollama serve
+```
 
-3. Start the development server:
-   ```bash
-   npm start
-   ```
+---
 
-4. Open your browser at: `http://localhost:3000`
-
-## API Documentation
+## 🔎 API Documentation
 
 ### Base URL
+
 `http://localhost:8000`
 
-### Endpoints
+### 1. Upload PDF
 
-#### 1. Upload PDF
-- **Endpoint**: `POST /upload`
-- **Description**: Upload a PDF file for processing
-- **Request**:
-  ```http
-  POST /upload
-  Content-Type: multipart/form-data
-  ```
-- **Parameters**:
-  - `pdf` (file): PDF file to upload
-- **Response** (Success 200):
-  ```json
-  {
-    "message": "'filename.pdf' uploaded successfully. Ask me anything about it!",
-    "document_id": "uuid-string",
-    "filename": "filename.pdf"
-  }
-  ```
+* **POST** `/upload`
+* **Body**: `multipart/form-data`
+* **Param**: `pdf` (file)
+* **Response**:
 
-#### 2. Ask Question
-- **Endpoint**: `POST /ask`
-- **Description**: Ask a question about an uploaded document
-- **Request**:
-  ```http
-  POST /ask
-  Content-Type: application/json
-  ```
-  ```json
-  {
-    "query": "What is this document about?",
-    "document_id": "uuid-string"
-  }
-  ```
-- **Response** (Success 200):
-  ```json
-  {
-    "answer": "The document discusses..."
-  }
-  ```
+```json
+{
+  "message": "'sample.pdf' uploaded successfully.",
+  "document_id": "uuid-string",
+  "filename": "sample.pdf"
+}
+```
 
-#### 3. List Documents
-- **Endpoint**: `GET /documents`
-- **Description**: List all uploaded documents
-- **Response** (Success 200):
-  ```json
-  [
-    {
-      "id": "uuid-string",
-      "filename": "filename.pdf",
-      "upload_date": "2023-10-15T12:34:56.789"
-    }
-  ]
-  ```
+### 2. Ask a Question
 
-#### 4. Get Document Details
-- **Endpoint**: `GET /documents/{document_id}`
-- **Description**: Get metadata for a specific document
-- **Response** (Success 200):
-  ```json
+* **POST** `/ask`
+* **Body**:
+
+```json
+{
+  "query": "What is the summary?",
+  "document_id": "uuid-string"
+}
+```
+
+* **Response**:
+
+```json
+{
+  "answer": "The document discusses..."
+}
+```
+
+### 3. List Uploaded Documents
+
+* **GET** `/documents`
+* **Response**:
+
+```json
+[
   {
     "id": "uuid-string",
-    "filename": "filename.pdf",
-    "upload_date": "2023-10-15T12:34:56.789"
+    "filename": "file.pdf",
+    "upload_date": "2024-01-01T12:00:00"
   }
-  ```
-
-## Application Architecture
-
-### System Overview
-```
-Frontend (React) → Backend (FastAPI) → NLP Processing (LangChain/Ollama)
-                         │
-                         ↓
-                     ChromaDB (Vector Store)
-                         │
-                         ↓
-                     SQLite (Metadata)
+]
 ```
 
-### Workflow
-1. **PDF Upload**:
-   - User uploads PDF through frontend
-   - Backend saves PDF, extracts text, and splits into chunks
-   - Text chunks are converted to embeddings and stored in ChromaDB
-   - Document metadata is stored in SQLite
+### 4. Document Details
 
-2. **Question Answering**:
-   - User submits question about a document
-   - Backend retrieves relevant text chunks using semantic search
-   - Mistral LLM generates answer based on context
-   - Answer is returned to frontend and displayed
+* **GET** `/documents/{document_id}`
+* **Response**:
 
-3. **Document Management**:
-   - User can view list of uploaded documents
-   - User can switch between documents for Q&A
+```json
+{
+  "id": "uuid-string",
+  "filename": "file.pdf",
+  "upload_date": "2024-01-01T12:00:00"
+}
+```
 
-### Key Components
-- **Text Processing**: PyMuPDF for PDF text extraction
-- **Embeddings**: HuggingFace sentence transformers
-- **Vector Storage**: ChromaDB for efficient similarity search
-- **LLM Inference**: Ollama with Mistral model for answer generation
-- **State Management**: React hooks for UI state
-- **API Communication**: Axios for frontend-backend interaction
+---
 
-## Edge Cases and Known Limitations
+## 📚 Application Architecture
 
-### Handled Edge Cases
-1. **Empty PDFs**: 
-   - Detection: Checks if extracted text is empty
-   - Response: "The uploaded PDF appears to be empty or contains no text"
+### System Flow
 
-2. **Image-based PDFs**:
-   - Limitation: Cannot extract text from scanned documents
-   - Response: "This PDF appears to be image-based. Please upload a text-based PDF"
+```
+Frontend (React) → Backend (FastAPI) → LangChain + Ollama (Mistral)
+                           |
+                          ↓
+                     ChromaDB (Vectors)
+                          ↓
+                        SQLite
+```
 
-3. **Large PDFs**:
-   - Chunking: Splits documents into 1000-character chunks
-   - Timeout: 30-second timeout for processing
-   - Response: "Processing is taking longer than expected. Please try a smaller document"
+### Document Lifecycle
 
-4. **Unanswerable Questions**:
-   - Detection: When context doesn't contain relevant information
-   - Response: "I don't have enough information to answer that question based on this document"
+1. User uploads PDF via UI
+2. Text extracted with PyMuPDF
+3. Text chunked and embedded (MiniLM)
+4. Stored in ChromaDB; metadata stored in SQLite
+5. User asks question via frontend
+6. Vector search retrieves relevant chunks
+7. Mistral model generates answer via Ollama
+8. Answer is sent back and shown in chat UI
 
-5. **Unsupported File Types**:
-   - Validation: Accepts only .pdf files
-   - Response: "Only PDF files are supported"
+---
 
-### Current Limitations
-1. **Image-based PDFs**: Cannot process scanned documents (OCR not implemented)
-2. **Large Documents**: PDFs >50 pages may have performance issues
-3. **Complex Layouts**: Tables and complex formatting may not be preserved
-4. **Language Support**: Primarily optimized for English content
-5. **Security**: No user authentication in current implementation
+## 🛡️ Handled Edge Cases
 
-## Future Improvements
+* Empty PDFs: Alert and skip processing
+* Image-based PDFs: Not supported, alerts user
+* File types: Only accepts `.pdf`
+* Long PDFs: Chunked + timeout warning
+* Unanswerable queries: Graceful fallback message
 
-1. **OCR Integration**: Add support for scanned documents using Tesseract OCR
-2. **Document Summarization**: Generate automatic summaries of uploaded documents
-3. **User Authentication**: Add login system to persist documents per user
-4. **Cloud Storage**: Integrate AWS S3 for document storage
-5. **Enhanced UI**:
-   - Document preview functionality
-   - Searchable question history
-   - Export conversation as PDF
-6. **Performance Optimization**:
-   - Background processing with Celery
-   - Caching frequent questions
-   - Batch processing of documents
-7. **Multi-language Support**: Add language detection and translation capabilities
+## ❌ Known Limitations
 
+* No OCR for scanned documents
+* No user login/authentication
+* Performance degrades with very large files (>50 pages)
+
+---
+
+## ✨ Future Enhancements
+
+* 📝 PDF summarization on upload
+* 🔑 User accounts and authentication
+* 📰 OCR for image-based PDFs
+* ☁️ Cloud file storage (e.g., AWS S3)
+* 🌍 Language translation and multi-language support
+* ⚙️ Background processing with Celery
+* 📃 Export Q\&A as PDF transcript
+
+---
+
+## 🚫 Uninstall Instructions
+
+```bash
+# Remove virtual environment
+cd backend && deactivate && rm -rf venv
+
+# Delete project directory
+cd ../ && rm -rf pdf-insight-ai
+
+# Remove Ollama model
+ollama rm mistral
+```
+
+---
+
+## 😊 Support / Issues
+
+For help:
+
+1. Check logs in backend console
+2. Open GitHub Issues in this repo
+3. Confirm Ollama and Mistral are correctly installed
+
+---
+
+**Enjoy exploring your PDFs with AI-powered Q\&A!**
