@@ -43,7 +43,7 @@ PDF Insight AI is a full-stack application that allows users to upload PDF docum
 
 1. Clone the repository:
    ```bash
-   git clone 
+   git clone https://github.com/rohan77234/PDF_Q-A_FAST_API_NODEJS_APP
    cd pdf-insight-ai/backend
    ```
 
